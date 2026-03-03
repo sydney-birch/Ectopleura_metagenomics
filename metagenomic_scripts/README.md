@@ -31,4 +31,66 @@ for F in RAW_READS/*_1.fastq; do
     echo "moving to next sample" &
 done	
 ```
+C) Move clean reads into a new dir: `./1.2_move_clean_reads.sh`
+```
+mkdir CLEAN_READS
+for i in READ_QC/*; do 
+	b=${i#*/}
+	mv ${i}/final_pure_reads_1.fastq CLEAN_READS/${b}_1.fastq
+	mv ${i}/final_pure_reads_2.fastq CLEAN_READS/${b}_2.fastq
+done
+```
+
+## 2. Assemble metagenomes using MegaHit  
+A) Make an output dir    
+`mkdir ASSEMBLY`   
+
+B) submit slurm to loop through all clean reads to use metawrap assembly module:
+  - I'm assembling each sample separetly so we have replicate assemblies 
+  - 2_assembly.slurm : 
+
+```
+## run a loop to processes all samples for module 2 assembly
+for F in CLEAN_READS/*_1.fastq; do 
+    echo "current file:  $F"
+	R=${F%_*}_2.fastq
+    echo "R: $R"
+	BASE=${F##*/}
+    echo "Base: $BASE"
+	SAMPLE=${BASE%_*}
+    echo "Sample: $SAMPLE"
+    echo "line of code: metawrap assembly -1 $F -2 $R -m 200 -t 96 --metaspades -o ASSEMBLY/$SAMPLE"
+	metawrap assembly -1 $F -2 $R -m 200 -t 96 --metaspades -o ASSEMBLY/$SAMPLE
+    echo "moving to next sample" &
+done	 
+```
+C) Move assemblies into a new dir: `./2.2_move_clean_assemblies.sh`
+```
+mkdir CLEAN_ASSEMBLY
+for i in ASSEMBLY/*; do 
+	b=${i#*/}
+	echo "b: $b"
+	echo "mv ${i}/final_assembly.fasta CLEAN_ASSEMBLY/${b}_final-assembly.fasta"
+	cp ${i}/final_assembly.fasta CLEAN_ASSEMBLY/${b}_final-assembly.fasta
+done
+```
+D) Move assembly reports into a new dir: `./2.3_move_assembly_reports.sh`
+```
+mkdir ASSEMBLY_REPORTS
+
+for i in ASSEMBLY/*; do 
+	b=${i#*/}
+	echo "b: $b"
+	echo "cp ${i}/assembly_report.html ASSEMBLY_REPORTS/${b}_assembly-report.html"
+	#cp ${i}/assembly_report.html ASSEMBLY_REPORTS/${b}_assembly-report.html
+	
+done
+```
+
+
+
+
+
+
+
 
