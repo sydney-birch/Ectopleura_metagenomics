@@ -15,7 +15,20 @@ The overarching hypothesis of my PRFB work is: Distinct populations of *E. croce
     
 *All samples across all studies were collected on the same day*    
 
-This metagenomics study is assessing two questions: (1) Do the biofilms collected from the three locations (CML: New Castle NH; York ME; Wells ME) differ (characterize biofilm); and (2) Do the adult polyps associate with different bacteria across locations (characterize adult-associated microbes). We collected 8 samples for each type of sample (Biofilm or AAM) from each location - totaling 48 samples during analysis. 
+This metagenomics study is assessing two questions: (1) Do the biofilms collected from the three locations (CML: New Castle NH; York ME; Wells ME) differ (characterize biofilm); and (2) Do the adult polyps associate with different bacteria across locations (characterize adult-associated microbes). We collected 8 samples for each type of sample (Biofilm or AAM) from each location - totaling 48 samples during analysis. We chose to follow the [MetaWrap](https://github.com/bxlab/metaWRAP?tab=readme-ov-file) analysis pipeline. 
 
 ## Overview of Pipeline: 
-1. Download data and prep work (count reads)
+1. Download data and prep work (count reads, adjust names)
+2. QC samples and trimm reads (fastqc, trimmommatic)
+3. Assemble metagenomes (megahit)
+4. Run Kraken2 to get taxonomic composition (Kraken2 and Krona)
+    - Run Bracken for abundance estimation
+    - Calculate alpha diversity using KrakenTools
+    - Graph alpha and beta diversity in R
+5. Bin the assemblies with 3 algorithms (CONCOCT, MaxBin, and metaBAT)
+6. Consolidate bins
+7. Visualize the community and the extracted bins
+8. Find the abundances of the draft genomes (bins) across the samples
+9. Re-assemble the consolidated bin set
+10. Determine the taxonomy of each bin
+11. functionally annotate bins with PROKKA
