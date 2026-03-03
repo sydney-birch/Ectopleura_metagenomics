@@ -5,11 +5,11 @@ This repository contains the metagenomics analysis of Biofilm and Adult-Associat
 The overarching hypothesis of my PRFB work is: Distinct populations of *E. crocea* larvae are locally adapted to specfic biofilms, where larvae are cueing in on adult-associated microbes (AAM). 
 
 <ins>To examine this I have conducted: </ins>
-  - A reciprocal transplant larval settlement study to examine the settlement phenotype across 3 locations/populations in the Gulf of Maine *(data in [Ectopleura_pop_gen repository/larval_settlement](https://github.com/sydney-birch/Ectopleura_Population_genetics/tree/main/larval_settlement))*
+  - A reciprocal transplant larval settlement study to examine the settlement phenotype across 3 locations/populations in the Gulf of Maine *(data in [Ectopleura_pop_gen/larval_settlement](https://github.com/sydney-birch/Ectopleura_Population_genetics/tree/main/larval_settlement)  repository)*
     
   - A metagenomics study examining the biofilm from each location and Adult-Associated Microbes (AAM) from polyps (adults) from each location *(data in this repository: [metagenomic_scripts](https://github.com/sydney-birch/Ectopleura_metagenomics/tree/main/metagenomic_scripts))*
     
-  - A ddRAD pop gen study to examine the population structure and genetic variation across locations *(data in [Ectopleura_pop_gen repository/ddRAD_scripts](https://github.com/sydney-birch/Ectopleura_Population_genetics/tree/main/ddRAD_scripts))*
+  - A ddRAD pop gen study to examine the population structure and genetic variation across locations *(data in [Ectopleura_pop_gen/ddRAD_scripts](https://github.com/sydney-birch/Ectopleura_Population_genetics/tree/main/ddRAD_scripts) repository)*
     
   - I'm currently sequencing the genome to aid in the ddRAD analysis *(data coming soon)*    
     
