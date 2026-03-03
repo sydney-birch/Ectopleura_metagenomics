@@ -5,7 +5,7 @@ This repository contains the metagenomics analysis of Biofilm and Adult-Associat
 The overarching hypothesis of my PRFB work is: Distinct populations of *E. crocea* larvae are locally adapted to specfic biofilms, where larvae are cueing in on adult-associated microbes (AAM). 
 
 <ins>To examine this I have conducted: </ins>
-  - A recipricol transplant larval settlement study to examine the settlement phenotype across 3 locations/populations in the Gulf of Maine *(data in [sydney-birch/Ectopleura_pop_gen repository](https://github.com/sydney-birch/Ectopleura_Population_genetics)*
+  - A reciprocal transplant larval settlement study to examine the settlement phenotype across 3 locations/populations in the Gulf of Maine *(data in [sydney-birch/Ectopleura_pop_gen repository](https://github.com/sydney-birch/Ectopleura_Population_genetics)*
     
   - A metagenomics study examining the biofilm from each location and Adult-Associated Microbes (AAM) from polyps (adults) from each location *(data in this repository)*
     
