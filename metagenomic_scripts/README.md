@@ -315,7 +315,6 @@ C) Follow another [tutorial](https://www.nature.com/articles/s41596-022-00738-y#
 
    ```   
   - Graph alpha and beta diversity in R --> Ecto_AAM_Biofilm_diversity_stats.R
-  - Run MetaCerberus on clean fastq files `metacerberus.py --prodigal ../CLEAN_READS --illumina --meta --dir_out AAM_Biofilm_metacerb_output `
     
 	
 ## 4. MetaWrap Binning  
@@ -364,10 +363,126 @@ for F in INITIAL_BINNING/*; do
 done	
 ```
 
+## 6. Visualize the community and the extracted bins with Blobology 
+blobology will project the entire assembly onto a GC vs Abundance plane and annotate them with taxonomy and bin info    
 
+A) Make an output dir    
+`mkdir BLOBOLOGY`   
 
+B) submit slurm to loop through all raw reads to use metawrap read_qc module (trimmomatic and fastqc):
+  - 6_blobology.slurm: 
 
+```
+## run a loop to processes all samples for module 6 blobology
+for F in BIN_REFINEMENT/*; do
+    echo "F current dir: $F"
+    b=${F#*/}
+    echo "b:  $b"
+    echo "line of code: metawrap blobology -a ASSEMBLY/$b/final_assembly.fasta -t 96 -o BLOBOLOGY/$b --bins $F/metawrap_80_5_bins CLEAN_READS/$b*fastq"
+    #metawrap blobology -a ASSEMBLY/$b/final_assembly.fasta -t 96 -o BLOBOLOGY/$b --bins $F/metawrap_80_5_bins CLEAN_READS/$b*fastq
+    echo "moving to next sample" &
+done	
+```
+C) Run script to move all the blobplots for export into a BLOB_PLOTS dir   
+`mkdir BLOB_PLOTS`   
+`./6.2_move_blobplots.sh`   
 
+## 7. Find the abundaces of the draft genomes (bins) across the samples 
+Find how the extracted genomes are distributed across the samples, and in what abundances each bin is present in each sample   
 
+A) Make an output dir    
+`mkdir QUANT_BINS`   
 
+B) submit slurm to loop through all raw reads to use metawrap read_qc module (trimmomatic and fastqc):
+  - 7_quant_bins.slurm: 
 
+```
+## run a loop to processes all samples for module 7 quant bins
+for F in BIN_REFINEMENT/*; do
+    echo "F current dir: $F"
+    b=${F#*/}
+    echo "b:  $b"
+    echo "line of code: metawrap quant_bins -b BIN_REFINEMENT/metawrap_80_5_bins -o QUANT_BINS/$b -a ASSEMBLY/$b/final_assembly.fasta CLEAN_READS/$b*fastq"
+    #metawrap quant_bins -b $F/metawrap_80_5_bins -o QUANT_BINS/$b -a ASSEMBLY/$b/final_assembly.fasta CLEAN_READS/$b*fastq
+    echo "moving to next sample" &
+done	
+```
+
+## 8. Re-asssemble the consolidated bin set with the Reassemble_bins module 
+
+A) Make an output dir    
+`mkdir BIN_REASSEMBLY`   
+
+B) submit slurm to loop through all raw reads to use metawrap read_qc module (trimmomatic and fastqc):
+  - 8_reassem_bins.slurm: 
+
+```
+## run a loop to processes all samples for module 8 reassemble_bins
+for F in BIN_REFINEMENT/*; do
+    echo "F current dir: $F"
+    b=${F#*/}
+    echo "b:  $b"
+    echo "line of code: metawrap reassemble_bins -o BIN_REASSEMBLY/$b -1 CLEAN_READS/$b*1.fastq -2 CLEAN_READS/$b*2.fastq -t 96 -m 800 -c 50 -x 10 -b $F/metawrap_80_5_bins"
+    #metawrap reassemble_bins -o BIN_REASSEMBLY/$b -1 CLEAN_READS/$b*1.fastq -2 CLEAN_READS/$b*2.fastq -t 96 -m 800 -c 50 -x 10 -b $F/metawrap_80_5_bins
+    echo "moving to next sample" &
+done	
+```
+C) Copy over the reassembly pngs and stats to a new dir to scp to local computer `./8.2_move_reassem_stats.sh`
+```
+mkdir BIN_REASSEMBLY_Info
+
+for i in BIN_REASSEMBLY/*; do 
+	b=${i#*/}
+	echo "b: $b"
+	echo "i: $i"
+	echo "cp ${i}/reassembled_bins.png BIN_REASSEMBLY_Info/${b}_reassembled_bins.png"
+	echo "cp ${i}/reassembly_results.png BIN_REASSEMBLY_Info/${b}_reassembly_results.png"
+	echo "cp ${i}/reassembled_bins.stats BIN_REASSEMBLY_Info/${b}_reassembled_bins.stats"
+	#cp ${i}/reassembled_bins.png BIN_REASSEMBLY_Info/${b}_reassembled_bins.png
+	#cp ${i}/reassembly_results.png BIN_REASSEMBLY_Info/${b}_reassembly_results.png
+	#cp ${i}/reassembled_bins.stats BIN_REASSEMBLY_Info/${b}_reassembled_bins.stats
+	
+done
+```
+
+## 9. Determine the taxonomy of each bin with the Classify_bins module   
+
+A) Make an output dir    
+`mkdir BIN_CLASSIFICATION`   
+
+B) submit slurm to loop through all raw reads to use metawrap read_qc module (trimmomatic and fastqc):
+  - 9_bin_class.slurm: 
+
+```
+## run a loop to processes all samples for module 9 bin_classification 
+for F in BIN_REASSEMBLY/*; do
+    echo "F current dir: $F"
+    b=${F#*/}
+    echo "b:  $b"
+    echo "line of code: metawrap classify_bins -b $F/reassembled_bins -o BIN_CLASSIFICATION/$b -t 48"
+    #metawrap classify_bins -b $F/reassembled_bins -o BIN_CLASSIFICATION/$b -t 48
+    echo "moving to next sample" &
+done
+```
+
+## 10. Functionally annotate bins with the Annotate_bins module  
+
+A) Make an output dir    
+`mkdir Funct_ANNOT`   
+
+B) submit slurm to loop through all raw reads to use metawrap read_qc module (trimmomatic and fastqc):
+  - 10_funct_annot.slurm: 
+
+```
+## run a loop to processes all samples for module 10 annotate function 
+for F in BIN_REASSEMBLY/*; do
+    echo "F current dir: $F"
+    b=${F#*/}
+    echo "b:  $b"
+    echo "line of code: metawrap annotate_bins -o FUNCT_ANNOT/$b -t 96 -b $F/reassembled_bins"
+    #metawrap annotate_bins -o FUNCT_ANNOT/$b -t 96 -b $F/reassembled_bins
+    echo "moving to next sample" &
+done
+```
+C) Run Clean reads through Metacerberus to get functional annotations across multiple orthology databases
+`metacerberus.py --prodigal ../CLEAN_READS --illumina --meta --dir_out AAM_Biofilm_metacerb_output `
