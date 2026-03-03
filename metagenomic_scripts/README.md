@@ -7,6 +7,28 @@ For the metagenomic workflow, we are following the [MetaWrap tutorial](https://g
 A) Download data using ftp  
 
 B) Change the names of the raw reads   
-      0_count_reads_in_zipped_fastqs.slurm --> This runs `./count_reads_in_zipped_fastqs.py -a raw_reads_5-13-25`   
+  - 0_count_reads_in_zipped_fastqs.slurm --> This runs `./0_count_reads_in_zipped_fastqs.py -a raw_reads_5-13-25`
   
 ## 1. MetaWrap QC   
+A) Make an output dir    
+`mkdir READ_QC`   
+
+B) submit slurm to loop through all raw reads to use metawrap read_qc module (trimmomatic and fastqc):
+  - 1_readqc.slurm: 
+
+```
+## run a loop to processes all samples for module 1 QC
+for F in RAW_READS/*_1.fastq; do 
+    echo "current file:  $F"
+	R=${F%_*}_2.fastq
+    #echo "R: $R"
+	BASE=${F##*/}
+    #echo "Base: $BASE"
+	SAMPLE=${BASE%_*}
+    echo "Sample: $SAMPLE"
+    #echo "line of code: metawrap read_qc -1 $F -2 $R -t 24 -o READ_QC/$SAMPLE --skip-bmtagger"
+	metawrap read_qc -1 $F -2 $R -t 24 -o READ_QC/$SAMPLE --skip-bmtagger
+    echo "moving to next sample" &
+done	
+```
+
