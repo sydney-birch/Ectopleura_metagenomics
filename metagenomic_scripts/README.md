@@ -87,6 +87,69 @@ for i in ASSEMBLY/*; do
 done
 ```
 
+## 3. Run Kraken2   
+A) Make an output dir    
+`mkdir KRAKEN`   
+
+B) submit slurm to loop through all clean assemblies and reads  to use metawrap kraken module:
+  - 3_Kraken.slurm: 
+
+```
+## run a loop to processes all samples for module 3 on assemblies
+for F in CLEAN_ASSEMBLY/*_final-assembly.fasta; do
+    echo "current file:  $F"
+    BASE=${F##*/}
+    #echo "Base: $BASE"
+    SAMPLE=${BASE%_*}
+    echo "Sample: $SAMPLE"
+    mkdir KRAKEN/$SAMPLE
+    #echo "line of code: metawrap kraken -o KRAKEN/$SAMPLE -t 96 -s 1000000 CLEAN_READS/$SAMPLE*fastq $F"
+    metawrap kraken2 -o KRAKEN/$SAMPLE -t 96 -s 1000000 CLEAN_READS/$SAMPLE*fastq $F
+    echo "moving to next sample" &
+done	
+```
+  - Copy over krona files to inspect in web browser
+    
+C) Follow another [tutorial](https://www.nature.com/articles/s41596-022-00738-y#Sec18) using kraken2 and Braken. First download databases and run Kraken2: 
+  - Download kraken [database](https://benlangmead.github.io/aws-indexes/k2)
+    ```
+    #Download full standard database
+    wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_16_GB_20250714.tar.gz
+
+    #Extract archive content
+    tar -xvzf k2_standard_20250714.tar.gz
+    ```
+  - Run Kraken2
+    ```
+    #Make dirs:
+    mkdir kraken_outputs
+    mkdir kreports
+
+    ## run a loop to processes all samples 
+    for F in ../CLEAN_ASSEMBLY/*_final-assembly.fasta; do
+        echo "current file:  $F"
+        BASE=${F##*/}
+        #echo "Base: $BASE"
+        SAMPLE=${BASE%_*}
+        echo "Sample: $SAMPLE"
+    
+        echo "line of code: kraken2 --db krak_DB_full --threads 8 --report kreports/$SAMPLE.k2report --report-minimizer-data --paired --minimum-hit-groups 3 ../CLEAN_READS/${SAMPLE}_1.fastq ../CLEAN_READS/${SAMPLE}_2.fastq > kraken_outputs/$SAMPLE.kraken2"
+        #kraken2 --db krak_DB_full --threads 8 --report kreports/$SAMPLE.k2report --report-minimizer-data --paired --minimum-hit-groups 3 ../CLEAN_READS/${SAMPLE}_1.fastq ../CLEAN_READS/${SAMPLE}_2.fastq > kraken_outputs/$SAMPLE.kraken2
+    echo "moving to next sample" &
+    done
+
+    ```
+
+
+	
+```
+mkdir CLEAN_READS
+for i in READ_QC/*; do 
+	b=${i#*/}
+	mv ${i}/final_pure_reads_1.fastq CLEAN_READS/${b}_1.fastq
+	mv ${i}/final_pure_reads_2.fastq CLEAN_READS/${b}_2.fastq
+done
+```
 
 
 
