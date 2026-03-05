@@ -119,7 +119,7 @@ C) Follow another [tutorial](https://www.nature.com/articles/s41596-022-00738-y#
     #Extract archive content
     tar -xvzf k2_standard_20250714.tar.gz
     ```
-  - Run Kraken2
+  - Run Kraken2: 3.C.1_Kraken.slurm
     ```
     #Make dirs:
     mkdir kraken_outputs
@@ -139,7 +139,7 @@ C) Follow another [tutorial](https://www.nature.com/articles/s41596-022-00738-y#
     done
 
     ```
-  - Run Bracken for abundance estimation at different taxonomic levels - require 10 reads
+  - Run Bracken for abundance estimation at different taxonomic levels (only showing species): 3.C.2_Bracken.slurm
     ```
     ## run a loop to processes all samples - SPECIES LEVEL
     for F in ../CLEAN_ASSEMBLY/*_final-assembly.fasta; do
@@ -153,34 +153,8 @@ C) Follow another [tutorial](https://www.nature.com/articles/s41596-022-00738-y#
         #bracken -d krak_DB_full -i kreports/$SAMPLE.k2report -l S -t 10 -o bracken_outputs/$SAMPLE.bracken -w breports/$SAMPLE.breport
     echo "moving to next sample" &
     done
-
-    ## run a loop to processes all samples - GENUS LEVEL
-    for F in ../CLEAN_ASSEMBLY/*_final-assembly.fasta; do
-        #echo "current file:  $F"
-        BASE=${F##*/}
-        #echo "Base: $BASE"
-        SAMPLE=${BASE%_*}
-        echo "Sample: $SAMPLE"
-    
-        echo "line of code: bracken -d krak_DB_full -i kreports/$SAMPLE.k2report -l G -t 10 -o bracken_outputs/$SAMPLE.bracken -w breports/$SAMPLE.breport"
-        #bracken -d krak_DB_full -i kreports/$SAMPLE.k2report -l G -t 10 -o bracken_outputs/$SAMPLE.bracken -w breports/$SAMPLE.breport
-    echo "moving to next sample" &
-    done
-
-    ## run a loop to processes all samples - FAMILY LEVEL
-    for F in ../CLEAN_ASSEMBLY/*_final-assembly.fasta; do
-        #echo "current file:  $F"
-        BASE=${F##*/}
-        #echo "Base: $BASE"
-        SAMPLE=${BASE%_*}
-        echo "Sample: $SAMPLE"
-    
-        echo "line of code: bracken -d krak_DB_full -i kreports/$SAMPLE.k2report -l F -t 10 -o bracken_outputs/$SAMPLE.bracken -w breports/$SAMPLE.breport"
-        #bracken -d krak_DB_full -i kreports/$SAMPLE.k2report -l F -t 10 -o bracken_outputs/$SAMPLE.bracken -w breports/$SAMPLE.breport
-    echo "moving to next sample" &
-    done
     ```
-  - Calculate alpha diversity using kraken tools
+  - Calculate alpha diversity using kraken tools (only showing species): 3.C.3_calc_alpha_div.sh
     ```
     #clone krakentools
     git clone https://github.com/jenniferlu717/KrakenTools
@@ -211,76 +185,9 @@ C) Follow another [tutorial](https://www.nature.com/articles/s41596-022-00738-y#
     
         echo "moving to next sample" &
     done
-
-
-    ## run a loop to processes all samples - GENUS
-    for F in ../CLEAN_ASSEMBLY/*_final-assembly.fasta; do
-        #echo "current file:  $F"
-        BASE=${F##*/}
-        #echo "Base: $BASE"
-        SAMPLE=${BASE%_*}
-        echo "Sample: $SAMPLE"
-
-        #Run diversity script
-        $SAMPLE >> genus-Berger-Parkers_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f   bracken_outputs_genus/$SAMPLE.bracken -a BP >> genus-Berger-Parkers_alpha.txt
-    
-        $SAMPLE >> genus-Shannons_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_genus/$SAMPLE.bracken -a Sh >> genus-Shannons_alpha.txt
-    
-        $SAMPLE >> genus-Fishers_index_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_genus/$SAMPLE.bracken -a F >> genus-Fishers_index_alpha.txt
-    
-        $SAMPLE >> genus-Simpsons_diversity_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_genus/$SAMPLE.bracken -a Si >> genus-Simpsons_diversity_alpha.txt
-    
-        $SAMPLE >> genus-Inverse_Simpsons_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_genus/$SAMPLE.bracken -a ISi >> genus-Inverse_Simpsons_alpha.txt
-    
-        echo "moving to next sample" &
-    done
-
-
-    ## run a loop to processes all samples - FAMILY
-    for F in ../CLEAN_ASSEMBLY/*_final-assembly.fasta; do
-        #echo "current file:  $F"
-        BASE=${F##*/}
-        #echo "Base: $BASE"
-        SAMPLE=${BASE%_*}
-        echo "Sample: $SAMPLE"
-
-        #Run diversity script
-        $SAMPLE >> family-Berger-Parkers_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_family/$SAMPLE.bracken -a BP >> family-Berger-Parkers_alpha.txt
-    
-        $SAMPLE >> family-Shannons_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_family/$SAMPLE.bracken -a Sh >> family-Shannons_alpha.txt
-    
-        $SAMPLE >> family-Fishers_index_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_family/$SAMPLE.bracken -a F >> family-Fishers_index_alpha.txt
-    
-        $SAMPLE >> family-Simpsons_diversity_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_family/$SAMPLE.bracken -a Si >> family-Simpsons_diversity_alpha.txt
-    
-        $SAMPLE >> family-Inverse_Simpsons_alpha.txt
-        python KrakenTools/DiversityTools/alpha_diversity.py -f bracken_outputs_family/$SAMPLE.bracken -a ISi >> family-Inverse_Simpsons_alpha.txt
-    
-        echo "moving to next sample" &
-    done
     ```
- - Calculate beta diversity using kraken tools
+ - Calculate beta diversity using kraken tools (only showing species): 3.C.4_calc_beta_div.sh
    ```
-   ## General 
-   # All groups together
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs/CML_AAM_2.bracken bracken_outputs/CML_AAM_5.bracken bracken_outputs/CML_AAM_9.bracken bracken_outputs/Wells_AAM_1.bracken   bracken_outputs/Wells_AAM_6.bracken bracken_outputs/Wells_AAM_8.bracken bracken_outputs/York_AAM_10.bracken bracken_outputs/York_AAM_6.bracken bracken_outputs/York_AAM_9.bracken bracken_outputs/Wells_Biofilm_10.bracken bracken_outputs/Wells_Biofilm_6.bracken bracken_outputs/Wells_Biofilm_7.bracken bracken_outputs/York_Biofilm_3.bracken bracken_outputs/York_Biofilm_4.bracken bracken_outputs/CML_Biofilm_10.bracken bracken_outputs/CML_Biofilm_1.bracken --type bracken >> beta_general_all_groups.txt
-
-   # Only AAM
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs/CML_AAM_2.bracken bracken_outputs/CML_AAM_5.bracken bracken_outputs/CML_AAM_9.bracken bracken_outputs/Wells_AAM_1.bracken bracken_outputs/Wells_AAM_6.bracken bracken_outputs/Wells_AAM_8.bracken bracken_outputs/York_AAM_10.bracken bracken_outputs/York_AAM_6.bracken bracken_outputs/York_AAM_9.bracken --type bracken >> beta_general_AAM_groups.txt
-
-   #Only Biofilm
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs/Wells_Biofilm_10.bracken bracken_outputs/Wells_Biofilm_6.bracken bracken_outputs/Wells_Biofilm_7.bracken bracken_outputs/York_Biofilm_3.bracken bracken_outputs/York_Biofilm_4.bracken bracken_outputs/CML_Biofilm_10.bracken bracken_outputs/CML_Biofilm_1.bracken --type bracken >> beta_general_Biofilm_groups.txt
-
-
    ## Species
    # All groups together
    python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs/CML_AAM_2.bracken bracken_outputs/CML_AAM_5.bracken bracken_outputs/CML_AAM_9.bracken bracken_outputs/Wells_AAM_1.bracken bracken_outputs/Wells_AAM_6.bracken bracken_outputs/Wells_AAM_8.bracken bracken_outputs/York_AAM_10.bracken bracken_outputs/York_AAM_6.bracken bracken_outputs/York_AAM_9.bracken bracken_outputs/Wells_Biofilm_10.bracken bracken_outputs/Wells_Biofilm_6.bracken bracken_outputs/Wells_Biofilm_7.bracken bracken_outputs/York_Biofilm_3.bracken bracken_outputs/York_Biofilm_4.bracken bracken_outputs/CML_Biofilm_10.bracken bracken_outputs/CML_Biofilm_1.bracken --type bracken --level S >> beta_species_all_groups.txt
@@ -290,29 +197,6 @@ C) Follow another [tutorial](https://www.nature.com/articles/s41596-022-00738-y#
 
    #Only Biofilm
    python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs/Wells_Biofilm_10.bracken bracken_outputs/Wells_Biofilm_6.bracken bracken_outputs/Wells_Biofilm_7.bracken bracken_outputs/York_Biofilm_3.bracken bracken_outputs/York_Biofilm_4.bracken bracken_outputs/CML_Biofilm_10.bracken bracken_outputs/CML_Biofilm_1.bracken --type bracken --level S >> beta_species_Biofilm_groups.txt
-
-
-   ## Genus
-   # All groups together
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs_genus/CML_AAM_2.bracken bracken_outputs_genus/CML_AAM_5.bracken bracken_outputs_genus/CML_AAM_9.bracken bracken_outputs_genus/Wells_AAM_1.bracken bracken_outputs_genus/Wells_AAM_6.bracken bracken_outputs_genus/Wells_AAM_8.bracken bracken_outputs_genus/York_AAM_10.bracken bracken_outputs_genus/York_AAM_6.bracken bracken_outputs_genus/York_AAM_9.bracken bracken_outputs_genus/Wells_Biofilm_10.bracken bracken_outputs_genus/Wells_Biofilm_6.bracken bracken_outputs_genus/Wells_Biofilm_7.bracken bracken_outputs_genus/York_Biofilm_3.bracken bracken_outputs_genus/York_Biofilm_4.bracken bracken_outputs_genus/CML_Biofilm_10.bracken bracken_outputs_genus/CML_Biofilm_1.bracken --type bracken --level G >> beta_genus_all_groups.txt
-
-   # Only AAM
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs_genus/CML_AAM_2.bracken bracken_outputs_genus/CML_AAM_5.bracken bracken_outputs_genus/CML_AAM_9.bracken bracken_outputs_genus/Wells_AAM_1.bracken bracken_outputs_genus/Wells_AAM_6.bracken bracken_outputs_genus/Wells_AAM_8.bracken bracken_outputs_genus/York_AAM_10.bracken bracken_outputs_genus/York_AAM_6.bracken bracken_outputs_genus/York_AAM_9.bracken --type bracken --level G >> beta_genus_AAM_groups.txt
-
-   #Only Biofilm
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs_genus/Wells_Biofilm_10.bracken bracken_outputs_genus/Wells_Biofilm_6.bracken bracken_outputs_genus/Wells_Biofilm_7.bracken bracken_outputs_genus/York_Biofilm_3.bracken bracken_outputs_genus/York_Biofilm_4.bracken bracken_outputs_genus/CML_Biofilm_10.bracken bracken_outputs_genus/CML_Biofilm_1.bracken --type bracken --level G >> beta_genus_Biofilm_groups.txt
-
-
-   ## Family
-   # All groups together
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs_family/CML_AAM_2.bracken bracken_outputs_family/CML_AAM_5.bracken bracken_outputs_family/CML_AAM_9.bracken bracken_outputs_family/Wells_AAM_1.bracken bracken_outputs_family/Wells_AAM_6.bracken bracken_outputs_family/Wells_AAM_8.bracken bracken_outputs_family/York_AAM_10.bracken bracken_outputs_family/York_AAM_6.bracken bracken_outputs_family/York_AAM_9.bracken bracken_outputs_family/Wells_Biofilm_10.bracken bracken_outputs_family/Wells_Biofilm_6.bracken bracken_outputs_family/Wells_Biofilm_7.bracken bracken_outputs_family/York_Biofilm_3.bracken bracken_outputs_family/York_Biofilm_4.bracken bracken_outputs_family/CML_Biofilm_10.bracken bracken_outputs_family/CML_Biofilm_1.bracken --type bracken --level F >> beta_famaily_all_groups.txt
-
-   # Only AAM
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs_family/CML_AAM_2.bracken bracken_outputs_family/CML_AAM_5.bracken bracken_outputs_family/CML_AAM_9.bracken bracken_outputs_family/Wells_AAM_1.bracken bracken_outputs_family/Wells_AAM_6.bracken bracken_outputs_family/Wells_AAM_8.bracken bracken_outputs_family/York_AAM_10.bracken bracken_outputs_family/York_AAM_6.bracken bracken_outputs_family/York_AAM_9.bracken --type bracken --level F >> beta_famaily_AAM_groups.txt
-
-   #Only Biofilm
-   python KrakenTools/DiversityTools/beta_diversity.py -i bracken_outputs_family/Wells_Biofilm_10.bracken bracken_outputs_family/Wells_Biofilm_6.bracken bracken_outputs_family/Wells_Biofilm_7.bracken bracken_outputs_family/York_Biofilm_3.bracken bracken_outputs_family/York_Biofilm_4.bracken bracken_outputs_family/CML_Biofilm_10.bracken bracken_outputs_family/CML_Biofilm_1.bracken --type bracken --level F >> beta_famaily_Biofilm_groups.txt
-
    ```   
   - Graph alpha and beta diversity in R --> Ecto_AAM_Biofilm_diversity_stats.R
     
@@ -484,5 +368,5 @@ for F in BIN_REASSEMBLY/*; do
     echo "moving to next sample" &
 done
 ```
-C) Run Clean reads through Metacerberus to get functional annotations across multiple orthology databases
+C) Run Clean reads through Metacerberus to get functional annotations across multiple orthology databases: 10.2_metacerb.slurm
 `metacerberus.py --prodigal ../CLEAN_READS --illumina --meta --dir_out AAM_Biofilm_metacerb_output `
