@@ -23,7 +23,7 @@ This metagenomics study is assessing two questions: (1) Do the biofilms collecte
 3. Assemble metagenomes (megahit)
 4. Run Kraken2 to get taxonomic composition (Kraken2 and Krona)
     - Run Bracken for abundance estimation
-    - Calculate alpha diversity using KrakenTools
+    - Calculate alpha & beta diversity using KrakenTools
     - Graph alpha and beta diversity in R
 5. Bin the assemblies with 3 algorithms (CONCOCT, MaxBin, and metaBAT)
 6. Consolidate bins
@@ -31,4 +31,5 @@ This metagenomics study is assessing two questions: (1) Do the biofilms collecte
 8. Find the abundances of the draft genomes (bins) across the samples
 9. Re-assemble the consolidated bin set
 10. Determine the taxonomy of each bin
-11. functionally annotate bins with PROKKA
+11. Functionally annotate bins with PROKKA
+      - Run through Metacerberus for KEGG and other annotations
